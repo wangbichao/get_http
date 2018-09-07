@@ -14,10 +14,8 @@ url_enter = 'http://hdzx.xicp.cn:56751/sjbmxt/wap.asp'
 url_register = 'http://hdzx.xicp.cn:56751/sjbmxt/banjilist.asp'
 
 # Get the string local source URL enter/register
-fout_s_url_enter = '''open("source\\source_url_enter",
-                     "r+", encoding='utf8')'''
-fout_s_url_register = '''open("source\\source_url_register", 
-                        "r+", encoding='utf8')'''
+fout_s_url_enter = open("source\\source_url_enter", "r+", encoding='utf8')
+fout_s_url_register = open("source\\source_url_register", "r+", encoding='utf8')
 S_url_enter = fout_s_url_enter.read(2210)
 S_url_register = fout_s_url_register.read()
 
