@@ -31,4 +31,3 @@ while True:
         break
 shooter01_01.close()
 new_shooter01_01.close()
-
