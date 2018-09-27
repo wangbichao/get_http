@@ -32,22 +32,26 @@ def creat_case_cmd():
             run_cmd = "gdbserver :3344 " + base_str + '"' + sys.argv[1][1:] + '"'
         else:
             run_cmd = base_str + '"' + sys.argv[1] + '"'
-        if "l" in sys.argv[2]:
-            run_cmd += " -log"
-        if "c" in sys.argv[2]:
-            run_cmd += " -clearIspMemory"
-        if "d" in sys.argv[2]:
-            run_cmd += " -dumpIspResult"
-        if "V" in sys.argv[2]:
-            run_cmd += " -checkDMAFIFO"
-        if "R" in sys.argv[2]:
-            run_cmd += " -logIspRegisterAccess"
+        if len(sys.argv) > 2:
+            if "l" in sys.argv[2]:
+                run_cmd += " -log"
+            if "c" in sys.argv[2]:
+                run_cmd += " -clearIspMemory"
+            if "d" in sys.argv[2]:
+                run_cmd += " -dumpIspResult"
+            if "V" in sys.argv[2]:
+                run_cmd += " -checkDMAFIFO"
+            if "R" in sys.argv[2]:
+                run_cmd += " -logIspRegisterAccess"
         if len(sys.argv) > 3:
             if "skip" in sys.argv[3]:
                 skip_frame = sys.argv[3].split('=')
                 run_cmd = run_cmd + " -abandonIspFrames=" + skip_frame[-1] + " "
+            else:
+                run_cmd += " " + ' '.join(sys.argv[3:])
+                return run_cmd
         if len(sys.argv) > 4:
-            run_cmd += ' '.join(sys.argv[4:])
+            run_cmd += " " + ' '.join(sys.argv[4:])
         return run_cmd
     else:
         print("!!!No input case Num!!!")
