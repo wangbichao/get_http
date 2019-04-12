@@ -66,6 +66,8 @@ def list_all_files(rootdir):
 def check_file_format(temp_file):
     if 'doc' in (temp_file.lstrip(destDir)).split('.')[-1]:
         return 'doc'
+    if 'docx' in (temp_file.lstrip(destDir)).split('.')[-1]:
+        return 'doc'
     elif 'wps' in (temp_file.lstrip(destDir)).split('.')[-1]:
         return 'wps'
     elif 'xls' in (temp_file.lstrip(destDir)).split('.')[-1]:
@@ -81,24 +83,29 @@ def precess_files():
     allFilesList = list_all_files(destDir)
     # enter word environment, maybe don't change env. TODO: FIXME
     word_temp = win32com.client.gencache.EnsureDispatch('word.application')
-    word_temp.Visible = 0
-    word_temp.DisplayAlerts = 0
     i = 0
     for each_file in allFilesList:
         i = i + 1
+        # print(each_file)
+        # print(destDir)
+        # print(each_file.lstrip(destDir))
+        logger.info("Start [ " + str(i) + " ] processing : " + each_file.lstrip(destDir))
         if check_file_format(each_file) == 'doc':
-            logger.info("Start [ " + str(i) + " ] processing : " + each_file.lstrip(destDir))
             abs_path = os.path.abspath(each_file)
             process_docx(word_temp, abs_path)
             logger.debug("    Replace [ " + str(i) + " ] completed")
         elif check_file_format(each_file) == 'xslx':
-            logger.warning("!!!! No found format, please manually modify : " + each_file.lstrip(destDir))
+            logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
         elif check_file_format(each_file) == 'wps':
-            logger.warning("!!!! No found format, please manually modify : " + each_file.lstrip(destDir))
+            logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
+            # logger.info("Start [ " + str(i) + " ] processing : " + each_file.lstrip(destDir))
+            # wps_path = os.path.abspath(each_file)
+            # process_wps(wps_path)
+            # logger.debug("    Replace [ " + str(i) + " ] completed")
         elif check_file_format(each_file) == 'no_found':
             logger.warning("!!!! No found format, please manually modify : " + each_file.lstrip(destDir))
         else:
-            logger.warning("!!!! No found format, please manually modify : " + each_file.lstrip(destDir))
+            logger.error("!!!! Error format, please manually modify : " + each_file.lstrip(destDir))
     # exit word environment
     word_temp.Quit()
     return
@@ -131,6 +138,35 @@ def process_docx(w, file_doc):
     doc.SaveAs(file_doc)
     w.Documents.Close()
 #    w.Quit()
+    return
+# Docx process lib end
+
+
+# Docx process lib start
+def process_wps(file_doc):
+    # start word process
+    #try:
+    #    w = win32com.client.gencache.EnsureDispatch('kwps.application')
+    #except ValueError as e:
+    #    w = win32com.client.gencache.EnsureDispatch('wps.application')
+    #else:
+    w = win32com.client.gencache.EnsureDispatch('wps.application')
+    time.sleep(1)
+#    w.Visible = 0
+#    w.DisplayAlerts = 0
+    # open doc
+    # debug
+    doc = w.Documents.Open(file_doc)
+    for i in range(len(replaceDestList)):
+        # replace text body
+        w.Selection.Find.ClearFormatting()
+        w.Selection.Find.Replacement.ClearFormatting()
+        # w.Selection.Find.Execute(replaceSourceList[i], False, False, False, False, False, True, 1, True, replaceDestList[i], 2)
+        w.Selection.Find.Execute(replaceSourceList[i], False, False, False, False, False, True, 1, False, replaceDestList[i], 2)
+    doc.SaveAs(file_doc)
+    w.Documents.Close()
+
+    w.Quit()
     return
 # Docx process lib end
 
