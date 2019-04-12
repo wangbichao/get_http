@@ -1,0 +1,120 @@
+#
+#
+#
+#
+
+import sys
+import os
+import shutil
+import time
+import openpyxl
+import re
+import docx
+import io
+
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')
+
+
+replaceSourceList = []
+sourceColumn = 2
+replaceDestList = []
+DestColumn = 3
+replaceRule = openpyxl.load_workbook(".\\replace_rule.xlsx").get_sheet_by_name('replace_rule')
+cutTime = time.strftime('_%Y%m%d-%H_%M_%S', time.localtime(time.time()))
+sourceDir = ".\\source_template"
+
+
+# create replace rule
+def create_replace_rule():
+    for i in range(3, 102):
+        if replaceRule.cell(row=i, column=sourceColumn).value is not None:
+            replaceSourceList.append((str(replaceRule.cell(row=i, column=sourceColumn).value)).rstrip('').rstrip('\n').rstrip('\r'))
+        if replaceRule.cell(row=i, column=DestColumn).value is not None:
+            replaceDestList.append((str(replaceRule.cell(row=i, column=DestColumn).value)).rstrip('').rstrip('\n').rstrip('\r'))
+    print(replaceSourceList)
+    print(replaceDestList)
+    global destDir
+    destDir = ".\\dest_document\\[autoGen] " + replaceDestList[0] + cutTime
+    if (len(replaceSourceList) == len(replaceDestList)) is not True:
+        print(" !!!!!! 生成文件失败 !!!!!! 请检查表格 replace_rule.xlsx !!!!!! \n")
+        return False
+    else:
+        return True
+
+
+# Gen a new copy
+def gen_new_copy():
+    shutil.copytree(sourceDir, destDir)
+
+
+def list_all_files(rootdir):
+    _files = []
+    list = os.listdir(rootdir)
+    for i in range(0, len(list)):
+        path = os.path.join(rootdir, list[i])
+        if os.path.isdir(path):
+            _files.extend(list_all_files(path))
+        if os.path.isfile(path):
+            _files.append(path)
+    return _files
+
+
+def check_file_format(temp_file):
+    # print(temp_file.lstrip(destDir))
+    return 'doc'
+
+
+# List all documents and replace according to the rules
+def precess_files():
+    allFilesList = list_all_files(destDir)
+    i = 0
+    for each_file in allFilesList:
+        i = i + 1
+        if check_file_format(each_file) == 'doc':
+            print("[ " + str(i) + " ] Start processing : " + each_file.lstrip(destDir))
+            process_docx(each_file)
+            print("       Replace completed")
+        elif check_file_format(each_file) == 'xslx':
+            print("[ " + str(i) + " ] Start processing : " + each_file.lstrip(destDir))
+            print("       Replace completed")
+        else:
+            print("[ " + str(i) + " ] Start processing : " + each_file.lstrip(destDir))
+            print("       Replace completed")
+    return
+
+
+# Docx process lib start
+def clear_paragraph(self, paragraph):
+    p_element = paragraph._p
+    p_child_elements = [elm for elm in p_element.iterchildren()]
+    for child_element in p_child_elements:
+        p_element.remove(child_element)
+
+
+def paragraph_replace(self, search, replace):
+    searchre = re.compile(search)
+    for paragraph in self.paragraphs:
+        paragraph_text = paragraph.text
+        if paragraph_text:
+            if searchre.search(paragraph_text):
+                print("        " + search + "  ->  " + replace)
+                self.clear_paragraph(paragraph)
+                paragraph.add_run(re.sub(search, replace, paragraph_text))
+    return paragraph
+
+
+def process_docx(file_doc):
+    document = docx.Document(file_doc)
+    for i in range(len(replaceDestList)):
+        paragraph_replace(document, replaceSourceList[i], replaceDestList[i])
+# Docx process lib end
+
+
+if __name__ == "__main__":
+    if create_replace_rule() is True:
+        gen_new_copy()
+        precess_files()
+        os.system('pause')
+    else:
+        os.system('pause')
