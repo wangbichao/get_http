@@ -199,6 +199,7 @@ def process_xlsx(file_xslx):
 
 if __name__ == "__main__":
     try:
+        logger.info("+++++    Version: 1.0.0   +++++")
         if create_replace_rule() is True:
             gen_new_copy()
             precess_files()
