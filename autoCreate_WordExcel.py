@@ -96,6 +96,8 @@ def precess_files():
             logger.debug("    Replace [ " + str(i) + " ] completed")
         elif check_file_format(each_file) == 'xslx':
             logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
+        elif check_file_format(each_file) == 'xls':
+            logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
         elif check_file_format(each_file) == 'wps':
             logger.warning("!!!! No susport WPS format, please manually modify : " + each_file.lstrip(destDir))
             # logger.info("Start [ " + str(i) + " ] processing : " + each_file.lstrip(destDir))
