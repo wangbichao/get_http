@@ -72,6 +72,8 @@ def check_file_format(temp_file):
         return 'wps'
     elif 'xls' in (temp_file.lstrip(destDir)).split('.')[-1]:
         return 'xls'
+    elif 'xslx' in (temp_file.lstrip(destDir)).split('.')[-1]:
+        return 'xslx'
     elif 'ignore' in (temp_file.lstrip(destDir)).split('.')[-1]:
         return 'ignore'
     else:
@@ -95,11 +97,11 @@ def precess_files():
             process_docx(word_temp, abs_path)
             logger.debug("    Replace [ " + str(i) + " ] completed")
         elif check_file_format(each_file) == 'xslx':
-            logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
+            logger.warning("!!!! Not susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
         elif check_file_format(each_file) == 'xls':
-            logger.warning("!!!! No susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
+            logger.warning("!!!! Not susport EXCEL format, please manually modify : " + each_file.lstrip(destDir))
         elif check_file_format(each_file) == 'wps':
-            logger.warning("!!!! No susport WPS format, please manually modify : " + each_file.lstrip(destDir))
+            logger.warning("!!!! Not susport WPS format, please manually modify : " + each_file.lstrip(destDir))
             # logger.info("Start [ " + str(i) + " ] processing : " + each_file.lstrip(destDir))
             # wps_path = os.path.abspath(each_file)
             # process_wps(wps_path)
